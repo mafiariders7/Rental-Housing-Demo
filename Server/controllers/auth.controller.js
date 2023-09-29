@@ -1,8 +1,9 @@
 import User from "../models/user.model.js";
 import bctyrpt from 'bcryptjs'
 import { errorHandler } from "../utils/error.js";
+import jwt from 'jsonwebtoken';
 
-export const signup = async (req, res ,next) => {
+export const signup = async (req, res, next) => {
     try {
         const { username, password, email } = req.body;
         const hashedPassword = bctyrpt.hashSync(password, 12);
@@ -11,7 +12,7 @@ export const signup = async (req, res ,next) => {
         await newUser.save();
 
 
-        console.log({username,email});
+        console.log({ username, email });
         res.status(200)
             .json({
                 message: "User created"
@@ -19,9 +20,41 @@ export const signup = async (req, res ,next) => {
     } catch (error) {
         // res.status(500)
         //     .json(error.message)
-        
+
         next(error)
 
         // next(errorHandler(550 , "Error from signup"))
+    }
+}
+
+export const signin = async (req, res) => {
+    const { email, password } = req.body;
+    try {
+
+        const validUser = await User.findOne({ email });
+        if (!validUser) {
+            return next(errorHandler(404, "Wrong Cridential/email"))
+        }
+
+        const validPassword = bctyrpt.compareSync(password, validUser.password);
+
+        if (!validPassword) {
+            return next(errorHandler(401, 'Wrong Credential/password'))
+        }
+        const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
+       
+        const {password:pass, ...rest} = validUser._doc;
+
+        res.cookie('access-token', token,
+            {
+                httpOnly: true,
+                expires: new Date(Date.now() + 1000*60*60*24*3),
+            }).status(200).json({
+                message: "Valid User",
+                user:rest,
+            })
+
+    } catch (error) {
+        next(error)
     }
 }
