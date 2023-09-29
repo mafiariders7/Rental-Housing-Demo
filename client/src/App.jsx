@@ -2,8 +2,8 @@ import React from "react";
 import { Routes ,Route } from "react-router-dom";
 import Home from "./pages/Home"
 import Profile from "./pages/Profile"
-import Singnin from "./pages/Singnin"
-import SingnOut from "./pages/SingnOut"
+import Signin from "./pages/Signin"
+import SignUp from "./pages/SignUp";
 import About from "./pages/About"
 import Header from "./Components/Header";
 const App = () => {
@@ -12,8 +12,8 @@ const App = () => {
       <Header></Header>
       <Routes>
         <Route path="/" element={<Home/>} />
-        <Route path="/sign-in" element={<Singnin/>} />
-        <Route path="/sing-up" element={<SingnOut/>} />
+        <Route path="/sign-in" element={<Signin/>} />
+        <Route path="/sign-up" element={<SignUp/>} />
         <Route path="/about" element={<About/>} />
         <Route path="/profile" element={<Profile/>} />
 
