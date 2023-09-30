@@ -13,7 +13,12 @@ const userSchema = new mongoose.Schema({
     password:{
         type:String,
         required:true
-    }
+    },
+    avatar:{
+        type:String,
+        required:true,
+        default:"https://institutcommotions.com/wp-content/uploads/2018/05/blank-profile-picture-973460_960_720-1.png"
+    },
     
 },{timestamps:true});
 

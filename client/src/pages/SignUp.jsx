@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import OAuth from "../Components/OAuth";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({});
@@ -80,15 +81,16 @@ const SignUp = () => {
         </button>
       </form>
 
+      <OAuth />
+
       <div className="flex gap-1 mt-5">
         <p>Have an account? </p>
         <span className="text-blue-700">
           <Link to="/sign-in">Sign in</Link>
         </span>
       </div>
-      {
-        error&& <p className="text-red-500 mt-5">{error}</p>
-      }
+
+      {error && <p className="text-red-500 mt-5">{error}</p>}
     </div>
   );
 };
