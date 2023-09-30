@@ -3,7 +3,7 @@ const initialState = {
     currUser: null,
     error:null,
     loading:null
-}
+}  
 
 const userSlice =  createSlice({
     name:'user',
