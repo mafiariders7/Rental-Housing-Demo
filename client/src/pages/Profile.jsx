@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useSelector ,useDispatch} from "react-redux";
-import { useRef} from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useRef } from "react";
 import {
   getDownloadURL,
   getStorage,
@@ -9,24 +9,30 @@ import {
 } from "firebase/storage";
 import { app } from "../firebase";
 
-import { updateUserFailure ,updateUserSuccess,updateUserStart } from "../redux/user/userslice";
-
-
+import {
+  updateUserFailure,
+  updateUserSuccess,
+  updateUserStart,
+  deleteUserStart,
+  deleteUserSuccess,
+  deleteUserFailure,
+} from "../redux/user/userslice";
 
 const Profile = () => {
-  const { currUser ,loading ,error} = useSelector((state) => state.user);
+  const { currUser, loading, error } = useSelector((state) => state.user);
   const fileRef = useRef();
   const [file, setFile] = useState(undefined);
   const [filePercent, setFilePercent] = useState(0);
   const [fileErr, setfileErr] = useState(false);
   const [formData, setFormData] = useState({});
-  const [updateSuccess ,setUpdatesuccess] = useState(false);
+  const [updateSuccess, setUpdatesuccess] = useState(false);
 
   console.log(formData);
   // console.log(file);
   // console.log(filePercent);
 
   const dispatch = useDispatch();
+  
 
   useEffect(() => {
     if (file) handleFileUpload(file);
@@ -57,38 +63,54 @@ const Profile = () => {
     );
   };
 
-  const handleChange =  (e)=>{
-    setFormData({...formData ,[e.target.id]:e.target.value})
-  }
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
 
-  const handleSubmit = async(e)=>{
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       dispatch(updateUserStart());
-      console.log(1)
-      const res = await fetch(`/api/user/update-user/${currUser._id}`,{
+      // console.log(1);
+      const res = await fetch(`/api/user/update-user/${currUser._id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
-      console.log(11)
+      // console.log(11);
       const data = await res.json();
-      if(data.success === false){
+      if (data.success === false) {
         dispatch(updateUserFailure(data.message));
         return;
       }
 
-      dispatch(updateUserSuccess(data.user))
+      dispatch(updateUserSuccess(data.user));
       console.log(data);
       setUpdatesuccess(true);
-
     } catch (error) {
-      dispatch(updateUserFailure(error.message))
+      dispatch(updateUserFailure(error.message));
     }
-  }
-  
+  };
+
+  const deleteAccHandler = async () => {
+    try {
+      dispatch(deleteUserStart());
+      const res = await fetch(`/api/user/delete-user/${currUser._id}`, {
+        method: "DELETE",  
+      });
+      const data = await res.json();
+      if (data.success === false) {
+        dispatch(deleteUserFailure(data.message));
+        return;
+      }
+      dispatch(deleteUserSuccess());
+    } catch (error) {
+      dispatch(deleteUserFailure(error.message))
+    }
+  };
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -111,12 +133,14 @@ const Profile = () => {
         />
         <p className="text-center">
           {fileErr ? (
-            <span className="text-red-700">Error in image uplaod(image must be less than 2MB)</span>
+            <span className="text-red-700">
+              Error in image uplaod(image must be less than 2MB)
+            </span>
           ) : filePercent > 0 && filePercent < 100 ? (
             <span className="text-blue-700">
               file uploading {filePercent} %
             </span>
-          ) : fileErr === false && filePercent === 100  ? (
+          ) : fileErr === false && filePercent === 100 ? (
             <span className="text-green-700">Image successfully uploaded</span>
           ) : (
             ""
@@ -129,7 +153,6 @@ const Profile = () => {
           className="border p-3 rounded-lg"
           onChange={handleChange}
           defaultValue={currUser?.username}
-
         />
 
         <input
@@ -149,22 +172,27 @@ const Profile = () => {
           onChange={handleChange}
         />
 
-        <button disabled={loading} type="submit"
+        <button
+          disabled={loading}
+          type="submit"
           className="p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95
          disabled:opacity-80 "
         >
-         {loading?"Loading...": "Update"}
+          {loading ? "Loading..." : "Update"}
         </button>
       </form>
 
       <div className="text-red-600 flex justify-between mt-2 font-semibold cursor-pointer">
-        <p>Delete account</p>
+        <p onClick={deleteAccHandler}>Delete account</p>
         <p>Sign Out</p>
       </div>
 
-      <p className="text-red-600 text-center font-semibold text-lg">{error? error:""}</p>
-      <p className="text-green-600 text-center font-semibold text-lg">{updateSuccess? "Updatation Successfull":""}</p>
-
+      <p className="text-red-600 text-center font-semibold text-lg">
+        {error ? error : ""}
+      </p>
+      <p className="text-green-600 text-center font-semibold text-lg">
+        {updateSuccess ? "Updatation Successfull" : ""}
+      </p>
     </div>
   );
 };

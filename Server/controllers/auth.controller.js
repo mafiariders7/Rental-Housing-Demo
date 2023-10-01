@@ -33,13 +33,13 @@ export const signin = async (req, res ,next) => {
 
         const validUser = await User.findOne({ email });
         if (!validUser) {
-            throw next(errorHandler(404, "Wrong Cridential/email"))
+            throw next(errorHandler(404, "User Not found"))
         }
 
         const validPassword = bctyrpt.compareSync(password, validUser.password);
 
         if (!validPassword) {
-            throw next(errorHandler(401, 'Wrong Credential/password'))
+            throw next(errorHandler(401, 'Wrong Credential'))
         }
         const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
        
