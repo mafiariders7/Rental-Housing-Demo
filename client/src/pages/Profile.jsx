@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useRef } from "react";
 import {
@@ -18,7 +19,7 @@ import {
   deleteUserFailure,
   signOutUserFailure,
   signOutUserStart,
-  signOutUserSuccess
+  signOutUserSuccess,
 } from "../redux/user/userslice";
 
 const Profile = () => {
@@ -35,7 +36,6 @@ const Profile = () => {
   // console.log(filePercent);
 
   const dispatch = useDispatch();
-  
 
   useEffect(() => {
     if (file) handleFileUpload(file);
@@ -101,7 +101,7 @@ const Profile = () => {
     try {
       dispatch(deleteUserStart());
       const res = await fetch(`/api/user/delete-user/${currUser._id}`, {
-        method: "DELETE",  
+        method: "DELETE",
       });
       const data = await res.json();
       if (data.success === false) {
@@ -110,29 +110,27 @@ const Profile = () => {
       }
       dispatch(deleteUserSuccess());
     } catch (error) {
-      dispatch(deleteUserFailure(error.message))
+      dispatch(deleteUserFailure(error.message));
     }
   };
-  
-  const handleSignout = async ()=>{
+
+  const handleSignout = async () => {
     try {
       dispatch(signOutUserStart());
-      const res = await fetch('/api/user/signout');
+      const res = await fetch("/api/user/signout");
       const data = await res.json();
-      if(data.success === false){
+      if (data.success === false) {
         dispatch(signOutUserFailure(data.message));
         return;
       }
 
       dispatch(signOutUserSuccess());
-
     } catch (error) {
       console.log(error);
       dispatch(signOutUserFailure(error.message));
     }
-  }
+  };
 
-  
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -202,6 +200,13 @@ const Profile = () => {
         >
           {loading ? "Loading..." : "Update"}
         </button>
+
+        <Link
+          to={"/create-listing"}
+          className="p-3 bg-green-700 text-center text-white rounded-lg uppercase hover:opacity-95"
+        >
+          Create Listing
+        </Link>
       </form>
 
       <div className="text-red-600 flex justify-between mt-2 font-semibold cursor-pointer">
