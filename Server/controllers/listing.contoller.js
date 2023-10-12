@@ -8,7 +8,7 @@ export const createListing = async (req, res, next) => {
         const listing = await Listing.create(data);
         res.status(201).json({
             success: true,
-             listing
+            listing
         })
     } catch (error) { 
         next(error);
