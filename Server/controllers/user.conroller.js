@@ -1,6 +1,7 @@
 import User from "../models/user.model.js"
 import { errorHandler } from "../utils/error.js"
 import bcrypt from 'bcryptjs'
+import Listing from '../models/listing.model.js'
 
 export const testHandler = (req, res) => {
     res.json({
@@ -56,5 +57,20 @@ export const signout = (req,res,next)=>{
         })
     } catch (error) {
         next(error);
+    }
+}
+
+export const getUserListing = async (req,res,next)=>{
+    try {
+        if(req.user.id !== req.params.id) throw next(errorHandler(401,'Unauthorized'));
+        else{
+            const listings =await Listing.find({userRef:req.params.id});
+            res.status(200).json({
+                success:true,
+                listings,
+            })
+        }
+    } catch (error) {
+        return next(error);
     }
 }

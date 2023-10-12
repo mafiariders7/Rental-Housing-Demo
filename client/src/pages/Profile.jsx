@@ -30,7 +30,8 @@ const Profile = () => {
   const [fileErr, setfileErr] = useState(false);
   const [formData, setFormData] = useState({});
   const [updateSuccess, setUpdatesuccess] = useState(false);
-
+  const [showListingError, setShowLisingError] = useState(null);
+  const [listingData, setListingData] = useState([]);
   console.log(formData);
   // console.log(file);
   // console.log(filePercent);
@@ -131,6 +132,21 @@ const Profile = () => {
     }
   };
 
+  const handleShowListing = async () => {
+    try {
+      const res = await fetch(`/api/user/listings/${currUser._id}`);
+      const data = await res.json();
+
+      if (data.success === false) {
+        setShowLisingError(data.message);
+        return;
+      }
+      console.log(data.listings);
+      setListingData(data.listings);
+    } catch (error) {
+      setShowLisingError(error.message);
+    }
+  };
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -220,6 +236,49 @@ const Profile = () => {
       <p className="text-green-600 text-center font-semibold text-lg">
         {updateSuccess ? "Updatation Successfull" : ""}
       </p>
+
+      <div className="flex flex-col">
+        <button
+          onClick={handleShowListing}
+          className="text-green-600  self-center font-semibold my-4 "
+        >
+          Show listings
+        </button>
+        <p className="text-red-600 text-center font-semibold text-sm">
+          {showListingError ? showListingError : ""}
+        </p>
+        <div className="flex gap-4 flex-col">
+          {listingData.length > 0 && <p className="text-center text-2xl font-semibold">Your Listings</p>}
+          {listingData &&
+            listingData.map((data) => (
+              <div
+                key={data._id}
+                className="flex items-center justify-between gap-3 evenly p-3 border-2"
+              >
+                <img
+                  src={data.imageUrls[0]}
+                  alt=""
+                  className="w-16 h-16 object-contain"
+                />
+
+                <Link
+                  className="flex gap-2 flex-col hover:underline hover:opacity-90 transition-all"
+                  to={`/listing/${data._id}`}
+                >
+                  <p className="text-slate-600 font-semibold">{data.name}</p>
+                </Link>
+                <div className="flex gap-2 flex-col ">
+                  <button className="text-green-600 uppercase font-semibold">
+                    Edit
+                  </button>
+                  <button className="text-red-600 uppercase font-semibold">
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+        </div>
+      </div>
     </div>
   );
 };
