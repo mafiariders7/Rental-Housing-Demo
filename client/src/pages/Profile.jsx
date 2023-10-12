@@ -31,7 +31,7 @@ const Profile = () => {
   const [formData, setFormData] = useState({});
   const [updateSuccess, setUpdatesuccess] = useState(false);
   const [showListingError, setShowLisingError] = useState(null);
-  const [listingData, setListingData] = useState([]);
+  const [listingData, setListingData] = useState(null);
   console.log(formData);
   // console.log(file);
   // console.log(filePercent);
@@ -147,6 +147,25 @@ const Profile = () => {
       setShowLisingError(error.message);
     }
   };
+
+  const handleDeleteListing = async (listingId) => {
+    try {
+      const res = await fetch(`/api/listing/deletelisting/${listingId}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+
+      if (data.success === false) {
+        console.log(data.message);
+        return;
+      }
+      setListingData((prev) => {
+        prev.filter((listing) => listing._id != listingId);
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -226,7 +245,9 @@ const Profile = () => {
       </form>
 
       <div className="text-red-600 flex justify-between mt-2 font-semibold cursor-pointer">
-        <p onClick={deleteAccHandler}>Delete account</p>
+        <button disabled onClick={deleteAccHandler}>
+          Delete account
+        </button>
         <p onClick={handleSignout}>Sign Out</p>
       </div>
 
@@ -247,10 +268,12 @@ const Profile = () => {
         <p className="text-red-600 text-center font-semibold text-sm">
           {showListingError ? showListingError : ""}
         </p>
-        <div className="flex gap-4 flex-col">
-          {listingData.length > 0 && <p className="text-center text-2xl font-semibold">Your Listings</p>}
-          {listingData &&
-            listingData.map((data) => (
+
+        {listingData && (
+          <div className="flex gap-4 flex-col">
+            <p className="text-center text-2xl font-semibold">Your Listings</p>
+             {listingData.length == 0 && <p className="text-center text-orange-600">Not a single Listing is created by you</p>}
+              {listingData.map((data) => (
               <div
                 key={data._id}
                 className="flex items-center justify-between gap-3 evenly p-3 border-2"
@@ -271,13 +294,17 @@ const Profile = () => {
                   <button className="text-green-600 uppercase font-semibold">
                     Edit
                   </button>
-                  <button className="text-red-600 uppercase font-semibold">
+                  <button
+                    className="text-red-600 uppercase font-semibold"
+                    onClick={() => handleDeleteListing(data._id)}
+                  >
                     Delete
                   </button>
                 </div>
               </div>
             ))}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

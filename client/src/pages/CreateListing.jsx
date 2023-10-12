@@ -124,6 +124,7 @@ const CreateListing = () => {
       console.log(data);
 
       setLoading(false);
+    
     } catch (err) {
       setError(err.message);
       setLoading(false);
