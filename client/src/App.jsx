@@ -9,6 +9,7 @@ import About from "./pages/About";
 import Header from "./Components/Header";
 import PrivateProute from "./Components/protectedRoute";
 import CreateListing from "./pages/CreateListing";
+import UpdateListing from "./pages/UpdateListing";
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
         <Route element={<PrivateProute/>}>
           <Route path="/profile" element={<Profile />} />
           <Route path="/create-listing" element={<CreateListing/>}/>
+          <Route path="/update-listing/:id" element={<UpdateListing/>}/>
         </Route>
       </Routes>
       

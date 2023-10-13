@@ -272,8 +272,12 @@ const Profile = () => {
         {listingData && (
           <div className="flex gap-4 flex-col">
             <p className="text-center text-2xl font-semibold">Your Listings</p>
-             {listingData.length == 0 && <p className="text-center text-orange-600">Not a single Listing is created by you</p>}
-              {listingData.map((data) => (
+            {listingData.length == 0 && (
+              <p className="text-center text-orange-600">
+                Not a single Listing is created by you
+              </p>
+            )}
+            {listingData.map((data) => (
               <div
                 key={data._id}
                 className="flex items-center justify-between gap-3 evenly p-3 border-2"
@@ -286,15 +290,16 @@ const Profile = () => {
 
                 <Link
                   className="flex gap-2 flex-col hover:underline hover:opacity-90 transition-all"
-                  to={`/listing/${data._id}`}
+                  to={`/update-listing/${data._id}`}
                 >
                   <p className="text-slate-600 font-semibold">{data.name}</p>
                 </Link>
                 <div className="flex gap-2 flex-col ">
                   <button className="text-green-600 uppercase font-semibold">
-                    Edit
+                    <Link to={`/update-listing/${data._id}`}> Edit</Link>
                   </button>
                   <button
+                    disabled
                     className="text-red-600 uppercase font-semibold"
                     onClick={() => handleDeleteListing(data._id)}
                   >
